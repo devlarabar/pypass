@@ -103,8 +103,8 @@ class TestPasswordGenerator(unittest.TestCase):
 
     def test_mixed_case_symbols_banned(self):
         """
-        Tests that a password will be generated with the right length and without
-        any of the characters in `banned_characters`.
+        Tests that a password will be generated with the right length and 
+        without any of the characters in `banned_characters`.
         """
 
         banned_characters = ["a", "e", "i", "o", "u"]
@@ -114,8 +114,13 @@ class TestPasswordGenerator(unittest.TestCase):
         self.assertEqual(len(password), 10,
                          "Password must be 10 characters long")
 
-        self.assertTrue(not any(char in banned_characters for char in password),
-                        "Password should not contain characters from the banned list")
+        self.assertTrue(not any(
+            char in banned_characters for char in password
+        ),
+            (
+            "Password should not contain characters from the "
+            "banned list"
+        ))
 
     def test_not_mixed_case_not_symbols_ban_uppercase(self):
         """
