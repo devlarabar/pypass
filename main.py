@@ -265,8 +265,13 @@ class PasswordGenerator():
             if mixed_case:
                 characters += string.ascii_letters
             else:
-                rng = random.randint(0, 1)
-                characters += string.ascii_lowercase if rng == 1 else string.ascii_uppercase
+                if set(string.ascii_lowercase).issubset(set(banned)) and "".join(banned) == "".join(banned).lower():
+                    password_case = 0
+                elif set(string.ascii_uppercase).issubset(set(banned)) and "".join(banned) == "".join(banned).upper():
+                    password_case = 1
+                else:
+                    password_case = random.choice([0, 1])
+                characters += string.ascii_lowercase if password_case == 1 else string.ascii_uppercase
             if symbols:
                 characters += string.punctuation
 
