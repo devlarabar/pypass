@@ -354,6 +354,7 @@ class PasswordGenerator():
 
         Args:
             length (int) -- The length of the password.
+            symbols (bool) -- Whether or not the password can contain symbols.
             mixed_case (bool) -- Whether or not the password will contain 
                                  mixed case characters.
             banned (str) -- A list of characters to exclude from the password.
