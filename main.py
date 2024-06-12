@@ -16,6 +16,7 @@ Write a Python function that returns a random password.
 import random
 import string
 import hashlib
+import sys
 
 
 class PasswordLengthError(Exception):
@@ -424,14 +425,19 @@ class PasswordGenerator():
         text response to the user.
         """
 
-        user_response_is_yes = self.get_yes_no_input(
-            "Would you like to generate a new password? [Y]es or Enter / "
-            "[N]o: "
-        )
-        if user_response_is_yes:
-            self.run_password_generator()
-        else:
-            print("\n❓ Then why did you start this program?\n")
+        try:
+            user_response_is_yes = self.get_yes_no_input(
+                "Would you like to generate a new password? [Y]es or Enter / "
+                "[N]o: "
+            )
+            if user_response_is_yes:
+                self.run_password_generator()
+            else:
+                print("\n❓ Then why did you start this program?\n")
+
+        except KeyboardInterrupt:
+            print("\nYou could have just said no. Goodbye.")
+            sys.exit(0)
 
     def run_password_generator(self):
         """Runs the password generator, and returns nothing.
@@ -463,6 +469,14 @@ class PasswordGenerator():
             )
 
             self.begin_program()
+
+        except KeyboardInterrupt:
+            print(
+                "\nI see you're no longer interested in being secure. Good "
+                "luck with that!"
+            )
+            sys.exit(0)
+
         except (PasswordLengthError, RuntimeError) as e:
             print(e)
             print("Try again?")
