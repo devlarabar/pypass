@@ -475,9 +475,13 @@ class PasswordGenerator():
             )
             sys.exit(0)
 
-        except (PasswordLengthError, RuntimeError) as e:
-            print(e)
-            print("Try again?")
+        except PasswordLengthError:
+            print("Looks like your password wasn't between "
+                  f"{self.min_password_length} and {self.max_password_length}."
+                  "Go ahead and try again.")
+
+        except RuntimeError as e:
+            print("I wasn't able to generate a unique password. Try again?")
 
 
 if __name__ == '__main__':
