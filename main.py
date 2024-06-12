@@ -61,8 +61,12 @@ class PasswordGenerator():
         """
 
         length = self.get_length_input()
-        symbols = self.get_symbols_input()
-        mixed_case = self.get_mixed_case_input()
+        symbols = self.get_yes_no_input(
+            "\nAllow symbols? [Y]es or Enter / [N]o: "
+        )
+        mixed_case = self.get_yes_no_input(
+            "\nAllow mixed case? [Y]es or Enter / [N]o: "
+        )
         banned = self.get_banned_input(symbols)
 
         return {
@@ -71,6 +75,22 @@ class PasswordGenerator():
             "mixed_case": mixed_case,
             "banned": banned
         }
+
+    def get_yes_no_input(self, prompt_message: str):
+        """
+        Asks the user a yes/no question and returns True for yes, False for no.
+        """
+
+        user_input = input(prompt_message)
+        while user_input != "" and user_input.lower() not in ["y", "n"]:
+            print(
+                "Please type Y or N (case-insensitive). Press enter for the "
+                "default (Y)."
+            )
+            user_input = input(prompt_message)
+        else:
+            is_yes = user_input == "" or user_input.lower() == "y"
+        return is_yes
 
     def get_length_input(self):
         """
@@ -125,42 +145,6 @@ class PasswordGenerator():
                   f"\n🔐 {password_change_explanation}, your password length "
                   f"has been set to {new_password_length}.")
             return new_password_length
-
-    def get_symbols_input(self):
-        """
-        Prompts the user to choose whether to allow symbols, and returns True 
-        or False based on their response.
-        """
-
-        prompt_message = "\nAllow symbols? [Y]es or Enter / [N]o: "
-        symbols_input = input(prompt_message)
-        while symbols_input != "" and symbols_input.lower() not in ["y", "n"]:
-            print(
-                "Please type Y or N to allow or disallow symbols. Press "
-                "enter for the default (Y)."
-            )
-            symbols_input = input(prompt_message)
-        else:
-            symbols = symbols_input == "" or symbols_input.lower() == "y"
-        return symbols
-
-    def get_mixed_case_input(self):
-        """
-        Prompts the user to choose whether to allow mixed case, and returns 
-        True or False based on their response.
-        """
-
-        prompt_message = "\nAllow mixed case? [Y]es or Enter / [N]o: "
-        case_input = input(prompt_message)
-        while case_input != "" and case_input.lower() not in ["y", "n"]:
-            print(
-                "Please type Y or N to allow or disallow mixed case. Press "
-                "enter for the default (Y)."
-            )
-            case_input = input(prompt_message)
-        else:
-            mixed_case = case_input == "" or case_input.lower() == "y"
-        return mixed_case
 
     def get_banned_input(self, symbols: bool):
         """
@@ -434,16 +418,17 @@ class PasswordGenerator():
         Runs `self.run_password_generator` if the user wants to generate a 
         password.
 
-        Prompts the user to select if they'd like to generate a new password,
-        and internally runs `self.run_password_generator` if they say yes. 
-        Otherwise, prints a fun text response aimed at the user.
+        Prompts the user to select if they'd like to generate a new password 
+        by internally running `self.get_yes_no_input`. Internally runs 
+        `self.run_password_generator` if they say yes. Otherwise, prints a fun 
+        text response to the user.
         """
 
-        user_response = input(
+        user_response_is_yes = self.get_yes_no_input(
             "Would you like to generate a new password? [Y]es or Enter / "
-            "Press any other key for No: "
+            "[N]o: "
         )
-        if user_response == "" or user_response.lower() == ("y" or "yes"):
+        if user_response_is_yes:
             self.run_password_generator()
         else:
             print("\n❓ Then why did you start this program?\n")
