@@ -226,8 +226,11 @@ class PasswordGenerator():
             with open('passwords.txt', 'a') as file:
                 file.write(hashed_password + '\n')
             return True
+        except FileNotFoundError:
+            with open('passwords.txt', 'w') as file:
+                file.write(hashed_password + '\n')
+            return True
         except (
-            FileNotFoundError,
             PermissionError,
             IsADirectoryError,
             OSError,
@@ -260,6 +263,10 @@ class PasswordGenerator():
             with open('passwords.txt', 'r') as file:
                 file_readable = file.read()
                 return hashed_password not in file_readable
+        except FileNotFoundError:
+            file = open('passwords.txt', 'x')
+            file.close()
+            return True
         except (
             FileNotFoundError,
             PermissionError,
