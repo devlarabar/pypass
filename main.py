@@ -204,9 +204,9 @@ class PasswordGenerator():
 
     def store_password(self, password: str):
         """
-        Appends `password` to passwords.txt, and returns nothing.
+        Appends the password to passwords.txt, and returns nothing.
 
-        Internally runs `self.hash_password` to hash the password before 
+        Internally runs `self.hash_password` to hash `password` before 
         appending it to passwords.txt.
 
         If passwords.txt cannot be found, creates it, and appends the hashed 
@@ -320,12 +320,13 @@ class PasswordGenerator():
                         f"Failed to generate a unique password after "
                         f"{unique_password_attempts} attempts."
                     )
-                return self.recursively_create_password(
-                    unique_password_attempts,
-                    length,
-                    allowed_characters,
-                    ""
-                )
+                else:
+                    return self.recursively_create_password(
+                        unique_password_attempts,
+                        length,
+                        allowed_characters,
+                        ""
+                    )
 
     def generate_password(
             self,
