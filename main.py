@@ -310,23 +310,40 @@ class PasswordGenerator():
                 password
             )
         else:
-            if self.check_password_uniqueness(password):
-                self.store_password(password)
-                return password
-            else:
-                unique_password_attempts += 1
-                if unique_password_attempts >= 10:
-                    raise RuntimeError(
-                        f"Failed to generate a unique password after "
-                        f"{unique_password_attempts} attempts."
-                    )
+            try:
+                if self.check_password_uniqueness(password):
+                    self.store_password(password)
+                    return password
                 else:
-                    return self.recursively_create_password(
-                        unique_password_attempts,
-                        length,
-                        allowed_characters,
-                        ""
-                    )
+                    unique_password_attempts += 1
+                    if unique_password_attempts >= 10:
+                        raise RuntimeError(
+                            f"Failed to generate a unique password after "
+                            f"{unique_password_attempts} attempts."
+                        )
+                    else:
+                        return self.recursively_create_password(
+                            unique_password_attempts,
+                            length,
+                            allowed_characters,
+                            ""
+                        )
+            except (
+                PermissionError,
+                IsADirectoryError,
+                OSError,
+                IOError
+            ) as e:
+                print(
+                    "There was an error verifying if this password is "
+                    "unique. Are you sure you have permission to read "
+                    "or write to passwords.txt? Does it even exist? "
+                )
+                print(
+                    "Though I can't verify if it's unique or store it, "
+                    "here's the password, anyway. "
+                )
+                return password
 
     def generate_password(
             self,
