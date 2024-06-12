@@ -18,14 +18,15 @@ import string
 import hashlib
 
 
-class PasswordTooShortError(Exception):
+class PasswordLengthError(Exception):
     """
-    Exception raised if a user inputs a password length that is too short.
+    Exception raised if a user inputs a password length that is too short or 
+    too long.
     """
 
     def __init__(self, message):
         """
-        Initializes the PasswordTooShortError exception with an error message.
+        Initializes the PasswordLengthError exception with an error message.
 
         Args:
             message (str): An explanation of the error.
@@ -36,6 +37,9 @@ class PasswordTooShortError(Exception):
 
 class PasswordGenerator():
     def __init__(self):
+        self.min_password_length = 10
+        self.max_password_length = 500
+
         print(r"""
                 __________        __________                       
                 \______   \___.__.\______   \_____    ______ ______
@@ -74,7 +78,13 @@ class PasswordGenerator():
 
         If the user enters certain numbers, prints different fun text to the
         console.
+
+        Raises:
+            PasswordLengthError -- If the user inputs a password length that 
+                                   is less than the minimum or more than the
+                                   maximum.
         """
+
         try:
             prompt_message = "\nPassword Length: "
             length_input = input(prompt_message)
@@ -83,20 +93,38 @@ class PasswordGenerator():
                 length_input = input(prompt_message)
             else:
                 length = int(length_input)
-            if length < 10:
-                raise PasswordTooShortError(
-                    "🔴 Your password must be at least 10 characters long!")
-            elif length >= 100:
-                print("You'd better write this one down.")
-            elif length == 42:
-                print("I can't give you answer to the Ultimate Question of "
-                      "Life, the Universe, and Everything, but I can give you "
-                      "a password.")
+
+            match length:
+                case _ if length < self.min_password_length:
+                    raise PasswordLengthError(
+                        "🔴 Your password must be at least "
+                        f"{self.min_password_length} characters long!"
+                    )
+                case _ if length > 500:
+                    raise PasswordLengthError(
+                        "🔴 Your password must not be more than "
+                        f"{self.max_password_length} characters long!"
+                    )
+                case _ if length >= 100:
+                    print("You'd better write this one down.")
+                case 42:
+                    print("I can't give you answer to the Ultimate Question "
+                          "of Life, the Universe, and Everything, but I can "
+                          "give you a password."
+                          )
             return length
-        except PasswordTooShortError as e:
-            print(e, "\n🔐 To keep you safe, your password length has been "
-                  "set to 10.")
-            return 10
+
+        except PasswordLengthError as e:
+            new_password_length = (
+                self.min_password_length if length < self.min_password_length
+                else self.max_password_length
+            )
+            password_change_explanation = "To keep you safe" if length < \
+                self.min_password_length else "To keep things less dramatic"
+            print(e,
+                  f"\n🔐 {password_change_explanation}, your password length "
+                  f"has been set to {new_password_length}.")
+            return new_password_length
 
     def get_symbols_input(self):
         """
@@ -171,7 +199,6 @@ class PasswordGenerator():
 
     def hash_password(self, password: str):
         """Hashes a password and returns it."""
-
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
         return hashed_password
 
@@ -322,15 +349,23 @@ class PasswordGenerator():
             banned (str) -- A list of characters to exclude from the password.
 
         Raises:
-            PasswordTooShortError -- If the user selects a password length 
-                                     less than 10.
+            PasswordLengthError -- If the user selects a password length 
+                                   less than the minimum or more than the 
+                                   maximum.
             RuntimeError -- If the program fails to generate a unique password
-                            after 10 attempts.
+                            after 10 attempts, or the user bans all characters.
         """
+
         try:
-            if length < 10:
-                raise PasswordTooShortError(
-                    "🔴 Your password must be at least 10 characters long!"
+            if length < self.min_password_length:
+                raise PasswordLengthError(
+                    "🔴 Your password must be at least "
+                    f"{self.min_password_length} characters long!"
+                )
+            elif length > self.max_password_length:
+                raise PasswordLengthError(
+                    "🔴 Your password must not be more than "
+                    f"{self.max_password_length} characters long!"
                 )
 
             characters = string.digits
@@ -363,10 +398,19 @@ class PasswordGenerator():
                 0, length, characters, "")
             return generated_password
 
-        except (PasswordTooShortError, RuntimeError) as e:
+        except (PasswordLengthError, RuntimeError) as e:
             raise e
 
     def begin_program(self):
+        """
+        Runs `self.run_password_generator` if the user wants to generate a 
+        password.
+
+        Prompts the user to select if they'd like to generate a new password,
+        and internally runs `self.run_password_generator` if they say yes. 
+        Otherwise, prints a fun text response aimed at the user.
+        """
+
         user_response = input(
             "Would you like to generate a new password? [Y]es or Enter / "
             "Press any other key for No: "
@@ -385,27 +429,30 @@ class PasswordGenerator():
         Finally, `self.begin_program` runs, prompting the user to generate 
         another new password.
         """
+        try:
+            user_inputs = self.get_user_inputs()
 
-        user_inputs = self.get_user_inputs()
+            print(
+                f"\nLength: {user_inputs['length']} "
+                f"\nAllow symbols: {user_inputs['symbols']} "
+                f"\nAllow mixed case: {user_inputs['mixed_case']} "
+                f"\nBanned list: {', '.join(user_inputs['banned'])}\n"
+            )
+            print(
+                "🔒",
+                self.generate_password(
+                    user_inputs["length"],
+                    user_inputs["symbols"],
+                    user_inputs["mixed_case"],
+                    user_inputs["banned"]
+                ),
+                "\n"
+            )
 
-        print(
-            f"\nLength: {user_inputs['length']} "
-            f"\nAllow symbols: {user_inputs['symbols']} "
-            f"\nAllow mixed case: {user_inputs['mixed_case']} "
-            f"\nBanned list: {', '.join(user_inputs['banned'])}\n"
-        )
-        print(
-            "🔒",
-            self.generate_password(
-                user_inputs["length"],
-                user_inputs["symbols"],
-                user_inputs["mixed_case"],
-                user_inputs["banned"]
-            ),
-            "\n"
-        )
-
-        self.begin_program()
+            self.begin_program()
+        except (PasswordLengthError, RuntimeError) as e:
+            print(e)
+            print("Try again?")
 
 
 if __name__ == '__main__':

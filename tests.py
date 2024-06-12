@@ -1,5 +1,5 @@
 import unittest
-from main import PasswordGenerator, PasswordTooShortError
+from main import PasswordGenerator, PasswordLengthError
 import string
 
 
@@ -41,14 +41,29 @@ class TestPasswordGenerator(unittest.TestCase):
 
     def test_too_short(self):
         """
-        Tests that PasswordTooShortError is raised for passwords shorter 
-        than 10 characters.
+        Tests that PasswordLengthError is raised for passwords shorter 
+        than the minimum.
         """
 
         self.assertRaises(
-            PasswordTooShortError,
+            PasswordLengthError,
             self.generate_and_print_password,
             5,
+            False,
+            False,
+            []
+        )
+
+    def test_too_long(self):
+        """
+        Tests that PasswordLengthError is raised for passwords longer 
+        than the maximum.
+        """
+
+        self.assertRaises(
+            PasswordLengthError,
+            self.generate_and_print_password,
+            505,
             False,
             False,
             []
@@ -151,6 +166,38 @@ class TestPasswordGenerator(unittest.TestCase):
         password = self.generate_and_print_password(
             10, False, False, banned_characters)
         self.assertTrue(not any(char == char.lower() for char in password))
+
+    def test_all_chars_banned(self):
+        """
+        Tests that a RuntimeError is raised if the user bans all characters.
+        """
+
+        self.assertRaises(
+            RuntimeError,
+            self.generate_and_print_password,
+            10,
+            False,
+            False,
+            list(string.ascii_letters + string.digits)
+        )
+
+        self.assertRaises(
+            RuntimeError,
+            self.generate_and_print_password,
+            10,
+            False,
+            True,
+            list(string.ascii_letters + string.digits)
+        )
+
+        self.assertRaises(
+            RuntimeError,
+            self.generate_and_print_password,
+            10,
+            True,
+            False,
+            list(string.ascii_letters + string.digits + string.punctuation)
+        )
 
 
 if __name__ == '__main__':
