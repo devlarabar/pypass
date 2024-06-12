@@ -57,8 +57,8 @@ class PasswordGenerator():
         Prompts the user for various password-related inputs and returns these
         in a dictionary.
 
-        Internally runs `self.get_length_input`, `self.get_symbols_input`, 
-        `self.get_mixed_case_input`, and `self.get_banned_input`.
+        Internally runs `self.get_length_input`, `self.get_yes_no_input`, and 
+        `self.get_banned_input`.
         """
 
         length = self.get_length_input()
