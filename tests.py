@@ -39,10 +39,10 @@ class TestPasswordGenerator(unittest.TestCase):
             print(f"🔒 {password}")
         return password
 
-    def test_too_short(self):
+    def test_length_error(self):
         """
         Tests that PasswordLengthError is raised for passwords shorter 
-        than the minimum.
+        than the minimum, or longer than the maximum.
         """
 
         self.assertRaises(
@@ -54,12 +54,6 @@ class TestPasswordGenerator(unittest.TestCase):
             []
         )
 
-    def test_too_long(self):
-        """
-        Tests that PasswordLengthError is raised for passwords longer 
-        than the maximum.
-        """
-
         self.assertRaises(
             PasswordLengthError,
             self.generate_and_print_password,
@@ -70,20 +64,16 @@ class TestPasswordGenerator(unittest.TestCase):
         )
 
     def test_mixed_case_symbols(self):
-        """
-        Tests that a password with 10 characters will be generated when 
-        the user inputs a length of 10.
-        """
+        """Tests that a password is generated with the correct length."""
+        password = self.generate_and_print_password(50, True, True, [])
 
-        password = self.generate_and_print_password(10, True, True, [])
-
-        self.assertEqual(len(password), 10,
-                         "Password must be 10 characters long")
+        self.assertEqual(len(password), 50,
+                         "Password must be 50 characters long")
 
     def test_mixed_case_not_symbols(self):
         """
-        Tests that a password will be generated without symbols when the
-        user chooses not to include symbols.
+        Tests that a password of the correct length will be generated without 
+        symbols when the user chooses not to include symbols.
         """
 
         password = self.generate_and_print_password(10, False, True, [])
@@ -97,7 +87,8 @@ class TestPasswordGenerator(unittest.TestCase):
 
     def test_not_mixed_case_not_symbols(self):
         """
-        Tests that a password correctly without symbols or mixed casing.
+        Tests that a password of the correct length will be generated without 
+        symbols or mixed casing.
 
         Tests that the password is generated without symbols and entirely
         uppercase or entirely lowercase characters when the user chooses
@@ -147,7 +138,7 @@ class TestPasswordGenerator(unittest.TestCase):
         digits and uppercase characters.
         """
 
-        banned_characters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+        banned_characters = list(string.ascii_uppercase + string.digits)
         password = self.generate_and_print_password(
             10, False, False, banned_characters)
         self.assertTrue(not any(char == char.upper() for char in password))
@@ -162,7 +153,7 @@ class TestPasswordGenerator(unittest.TestCase):
         digits and lowercase characters.
         """
 
-        banned_characters = list("abcdefghijklmnopqrstuvwxyz0123456789")
+        banned_characters = list(string.ascii_lowercase + string.digits)
         password = self.generate_and_print_password(
             10, False, False, banned_characters)
         self.assertTrue(not any(char == char.lower() for char in password))
