@@ -209,11 +209,13 @@ class PasswordGenerator():
         Internally runs `self.hash_password` to hash the password before 
         appending it to passwords.txt.
 
+        If passwords.txt cannot be found, creates it, and appends the hashed 
+        password to it.
+
         Args:
             password (str) -- The password that needs to be stored.
 
         Raises:
-            FileNotFoundError -- If passwords.txt cannot be found.
             PermissionError -- If the user does not have permission to write 
                                to passwords.txt.
             IsADirectoryError -- If passwords.txt is a directory, not a file.
@@ -246,11 +248,12 @@ class PasswordGenerator():
         password exists in passwords.txt. If so, the password is not unique, 
         and False is returned. Otherwise, True is returned.
 
+        If passwords.txt cannot be found, creates it, and returns True.
+
         Args:
             password (str) -- The password whose uniqueness to check.
 
         Raises:
-            FileNotFoundError -- If passwords.txt cannot be found.
             PermissionError -- If the user does not have permission to write 
                                to passwords.txt.
             IsADirectoryError -- If passwords.txt is a directory, not a file.
@@ -268,7 +271,6 @@ class PasswordGenerator():
             file.close()
             return True
         except (
-            FileNotFoundError,
             PermissionError,
             IsADirectoryError,
             OSError,
