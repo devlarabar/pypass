@@ -25,18 +25,10 @@ class PasswordLengthError(Exception):
     too long.
     """
 
-    def __init__(self, message):
-        """
-        Initializes the PasswordLengthError exception with an error message.
-
-        Args:
-            message (str): An explanation of the error.
-        """
-
-        super().__init__(message)
-
 
 class PasswordGenerator():
+    # Todo: Add docstring here
+
     def __init__(self):
         self.min_password_length = 10
         self.max_password_length = 500
@@ -77,7 +69,7 @@ class PasswordGenerator():
             "banned": banned
         }
 
-    def get_yes_no_input(self, prompt_message: str):
+    def get_yes_no_input(self, prompt_message: str) -> bool:
         """
         Asks the user a yes/no question and returns True for yes, False for no.
         """
@@ -93,7 +85,7 @@ class PasswordGenerator():
             is_yes = user_input == "" or user_input.lower() == "y"
         return is_yes
 
-    def get_length_input(self):
+    def get_length_input(self) -> int:
         """
         Prompts the user to input an integer length, and returns it.
 
@@ -147,7 +139,7 @@ class PasswordGenerator():
                   f"has been set to {new_password_length}.")
             return new_password_length
 
-    def get_banned_input(self, symbols: bool):
+    def get_banned_input(self, symbols: bool) -> list[str]:
         """
         Prompts the user to input an optional string of banned characters, 
         and returns this as a list.
@@ -182,7 +174,7 @@ class PasswordGenerator():
             banned = set(banned_input)
         return banned
 
-    def hash_password(self, password: str):
+    def hash_password(self, password: str) -> str:
         """Hashes a password and returns it."""
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
         return hashed_password
@@ -223,7 +215,7 @@ class PasswordGenerator():
         ) as e:
             raise e
 
-    def check_password_uniqueness(self, password: str):
+    def check_password_uniqueness(self, password: str) -> bool:
         """
         Returns True if the password is unique, and False otherwise.
 
@@ -295,6 +287,7 @@ class PasswordGenerator():
         else:
             try:
                 if self.check_password_uniqueness(password):
+                    # Todo: Move store_password elsewhere, this is a side effect
                     self.store_password(password)
                     return password
                 else:
@@ -334,7 +327,7 @@ class PasswordGenerator():
             symbols: bool,
             mixed_case: bool,
             banned: list[str]
-    ):
+    ) -> str:
         """
         Return a password.
 
